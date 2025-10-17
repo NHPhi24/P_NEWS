@@ -1,0 +1,150 @@
+
+.auth-page {
+    min-height: 100vh;
+    @include flex-center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: $spacing-xl 0;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 440px;
+    padding: 0 $spacing-md;
+}
+
+.auth-card {
+    background: white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-lg;
+    padding: $spacing-2xl;
+    width: 100%;
+
+    @include mobile {
+        padding: $spacing-xl;
+    }
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: $spacing-2xl;
+}
+
+.auth-title {
+    font-size: 2rem;
+    font-weight: $font-weight-bold;
+    color: $dark-color;
+    margin-bottom: $spacing-sm;
+
+    @include gradient-text
+}
+
+.auth-subtitle {
+    color: $secondary-color;
+    font-size: 1.125rem;
+}
+
+.auth-form {
+    margin-bottom: $spacing-xl;
+}
+
+.input-group { 
+    position:relative;
+    margin-bottom: $spacing-lg;
+
+    .password-toggle {
+        position: absolute;
+        right: $spacing-md;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        color: $secondary-color;
+        cursor: pointer;
+        padding: $spacing-xs;
+        transition: $transition-base;
+
+        &:hover {
+            color: $primary-color;
+        }
+    }
+}
+
+.auth-button {
+    width: 100%;
+    margin-top: $spacing-lg;
+}
+
+.auth-error{ 
+    background: rgba($danger-color, 0.1);
+    color: $danger-color;
+    padding: $spacing-md;
+    border-radius: $border-radius;
+    margin-bottom: $spacing-md;
+    border-left: 4px solid $danger-color;
+    font-weight: $font-weight-medium;
+}
+
+.auth-success {
+    background: rgba($danger-color, 0.1);
+    color: $success-color;
+    padding: $spacing-md;
+    border-radius: $border-radius;
+    margin-bottom: $spacing-md;
+    border-left: 4px solid $success-color;
+    font-weight: $font-weight-medium;
+}
+
+.auth-footer {
+    text-align: center;
+    padding-top: $spacing-lg;
+    border-top: 1px solid rgba($gray-color, 0.2);
+
+    p {
+        color: $secondary-color;
+        margin: 0;
+    }
+}
+
+.auth-link {
+    color: $primary-color;
+    font-weight: $font-weight-medium;
+    text-decoration: none;
+    transition: $transition-base;
+
+    &:hover {
+        filter: brightness(0.9); /* làm tối toàn bộ phần tử 10% */
+        text-decoration: underline;
+    }
+}
+
+// Responesive
+@include mobile {
+    .auth-page {
+        padding: $spacing-md;
+        align-items: flex-start;
+    }
+
+    .auth-container {
+        padding: 0;
+    }
+
+    .auth-card {
+        box-shadow: $shadow-md;
+    }
+}
+
+// animation for auth cards
+.auth-card {
+    animation: slideUp 0.5s ease-out;
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to{
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+

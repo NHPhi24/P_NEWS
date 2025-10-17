@@ -1,0 +1,119 @@
+.news-card {
+  background: white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  transition: $transition-base;
+  position: relative;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+
+    .news-card__image-img {
+      transform: scale(1.05);
+    }
+  }
+
+  &__hot-badge {
+    @include flex-center;
+    gap: $spacing-xs;
+    position: absolute;
+    top: $spacing-md;
+    left: $spacing-md;
+    background: linear-gradient(135deg, $warning-color, $danger-color);
+    color: white;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius;
+    font-size: 0.75rem;
+    font-weight: $font-weight-bold;
+    z-index: 2;
+  }
+
+  &__image {
+    height: 200px;
+    background: linear-gradient(135deg, $primary-color, $info-color);
+    position: relative;
+    overflow: hidden;
+
+    &-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: $transition-base;
+      display: block;
+    }
+
+    &-placeholder {
+      @include flex-center;
+      width: 100%;
+      height: 100%;
+      color: white;
+      font-size: 3rem;
+      font-weight: $font-weight-bold;
+      opacity: 0.7;
+    }
+  }
+
+  &__content {
+    padding: $spacing-lg;
+  }
+
+  &__meta {
+    @include flex-between;
+    margin-bottom: $spacing-sm;
+    font-size: 0.875rem;
+  }
+
+  &__category {
+    background: rgba($primary-color, 0.1);
+    color: $primary-color;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius;
+    font-weight: $font-weight-medium;
+  }
+
+  &__date {
+    color: $secondary-color;
+  }
+
+  &__title {
+    margin-bottom: $spacing-md;
+    
+    a {
+      color: $dark-color;
+      transition: $transition-base;
+      
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+
+  &__excerpt {
+    color: $secondary-color;
+    line-height: 1.6;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__footer {
+    @include flex-between;
+    padding-top: $spacing-md;
+    border-top: 1px solid rgba($gray-color, 0.2);
+  }
+
+  &__author {
+    &-name {
+      color: $dark-color;
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  &__views {
+    @include flex-center;
+    gap: $spacing-xs;
+    color: $secondary-color;
+    font-size: 0.875rem;
+  }
+}

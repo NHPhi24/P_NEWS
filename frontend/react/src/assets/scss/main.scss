@@ -1,0 +1,15 @@
+@import "./base";
+@import "./variables";
+@import "./mixins";
+
+// Components
+@import "../../components/common/Header/Header.scss";
+@import "../../components/common/Footer/Footer.scss";
+@import "../../components/news/NewsCard/NewsCard.scss";
+@import "../../components/ui/Loading/Loading.scss";
+
+// Pages
+@import "../../pages/Home/Home.scss";
+// @import "../../pages/News/NewsDetail.scss";
+@import "../../pages/Auth/Auth.scss";
+

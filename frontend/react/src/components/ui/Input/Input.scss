@@ -1,0 +1,72 @@
+.input-group {
+  margin-bottom: $spacing-lg;
+
+  &__label {
+    display: block;
+    margin-bottom: $spacing-sm;
+    font-weight: $font-weight-medium;
+    color: $dark-color;
+  }
+
+  &__required {
+    color: $danger-color;
+    margin-left: 2px;
+  }
+
+  &__wrapper {
+    position: relative;
+  }
+
+  &__icon {
+    position: absolute;
+    left: $spacing-md;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $secondary-color;
+    z-index: 2;
+  }
+
+  &__input {
+    width: 100%;
+    padding: $spacing-md;
+    border: 2px solid $gray-color;
+    border-radius: $border-radius;
+    font-family: $font-family;
+    font-size: $font-size-base;
+    transition: $transition-base;
+    background: white;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+
+    &:disabled {
+      // background: lighten($gray-color, 25%);
+      background: color-mix(in srgb, $primary-color, lighten 25%);
+      cursor: not-allowed;
+    }
+
+    &--error {
+      border-color: $danger-color;
+      
+      &:focus {
+        border-color: $danger-color;
+        box-shadow: 0 0 0 3px rgba($danger-color, 0.1);
+      }
+    }
+
+    &--with-icon {
+      padding-left: $spacing-2xl;
+    }
+  }
+
+  &__error {
+    display: block;
+    margin-top: $spacing-xs;
+    color: $danger-color;
+    font-size: 0.875rem;
+    font-weight: $font-weight-medium;
+  }
+}

@@ -1,0 +1,83 @@
+.pagination {
+    @include flex-center;
+    gap: $spacing-sm;
+    margin-top: $spacing-xl;
+    flex-wrap: wrap;
+
+    &-btn { 
+        @include flex-center;
+        min-width: 2.5rem;
+        height: 2.5rem;
+        padding: $spacing-sm $spacing-md;
+        border: 1px solid $primary-color;
+        background: $light-color;
+        color: $dark-color;
+        border-radius: $border-radius;
+        cursor: pointer;
+        transition: $transition-base;
+        font-weight: $font-weight-bold;
+        font-size: 0.875rem;
+
+        &:hover:not(:disabled) {
+            border-color: $primary-color;
+            color: $primary-color;
+            transform: translateY(-1px);
+        }
+
+        &.active {
+            background: $primary-color;
+            border-color: $primary-color;
+            color: white;
+
+            &:hover{
+                background: color-mix(in srgb, $primary-color, black 10%);
+                border-color: color-mix(in srgb, $primary-color, black 10%);
+            }
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        &.pagination-nav {
+            background: color-mix(in srgb, $gray-color, white 90%);
+
+            &:hover:not(:disabled) {
+                background: $primary-color;
+                color: white;
+                border-color: $primary-color;
+            }
+        }
+    }
+
+    &-ellipsis {
+        @include flex-center;
+        min-width: 2.5rem;
+        height: 2.5rem;
+        color: $gray-color;
+        font-size: 0.875rem;
+    }
+}
+
+// response
+
+@include mobile {
+    .pagination {
+        gap: $spacing-xs;
+
+        &-btn {
+            min-width: 2rem;
+            height: 2rem;
+            padding: $spacing-xs $spacing-sm;
+            font-size: 0.75rem;
+        }
+
+        &-ellipsis {
+            min-width: 2rem;
+            height: 2rem;
+            font-size: 0.75rem;
+        }
+    }
+}

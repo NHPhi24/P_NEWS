@@ -1,0 +1,133 @@
+// Global App Styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: $font-family;
+  font-size: $font-size-base;
+  line-height: 1.6;
+  color: $dark-color;
+  background-color: $light-color;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// App Layout
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding-top: 0;
+}
+
+// Loading Container
+.loading-container {
+  @include flex-center;
+  flex-direction: column;
+  min-height: 100vh;
+  background: $light-color;
+  gap: $spacing-lg;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid $gray-color;
+  border-top: 4px solid $primary-color;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Global Container
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
+
+  @include desktop {
+    padding: 0 $spacing-lg;
+  }
+}
+
+// Utility Classes
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.d-flex { display: flex; }
+.d-none { display: none; }
+.d-block { display: block; }
+
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.align-center { align-items: center; }
+
+.w-100 { width: 100%; }
+.h-100 { height: 100%; }
+
+// Responsive helpers
+.mobile-only {
+  display: none;
+  
+  @include mobile {
+    display: block;
+  }
+}
+
+.desktop-only {
+  display: block;
+  
+  @include mobile {
+    display: none;
+  }
+}
+
+// Print Styles
+@media print {
+  .header,
+  .footer,
+  .btn,
+  .dashboard__actions {
+    display: none !important;
+  }
+  
+  .main-content {
+    padding: 0;
+  }
+}
+
+// Focus styles for accessibility
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid $primary-color;
+  outline-offset: 2px;
+}
+
+// Selection styles
+::selection {
+  background: rgba($primary-color, 0.2);
+  color: $dark-color;
+}
+
+::-moz-selection {
+  background: rgba($primary-color, 0.2);
+  color: $dark-color;
+}

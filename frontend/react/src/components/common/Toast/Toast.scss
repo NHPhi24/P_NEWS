@@ -1,0 +1,61 @@
+.toast-container {
+  .Toastify__toast {
+    border-radius: $border-radius;
+    box-shadow: $shadow-lg;
+    font-family: $font-family;
+    font-weight: $font-weight-medium;
+
+    &--success {
+      background: $success-color;
+      color: white;
+      
+      .Toastify__progress-bar {
+        background: rgba(255, 255, 255, 0.7);
+      }
+    }
+
+    &--error {
+      background: $danger-color;
+      color: white;
+      
+      .Toastify__progress-bar {
+        background: rgba(255, 255, 255, 0.7);
+      }
+    }
+
+    &--warning {
+      background: $warning-color;
+      color: white;
+      
+      .Toastify__progress-bar {
+        background: rgba(255, 255, 255, 0.7);
+      }
+    }
+
+    &--info {
+      background: $info-color;
+      color: white;
+      
+      .Toastify__progress-bar {
+        background: rgba(255, 255, 255, 0.7);
+      }
+    }
+  }
+
+  .Toastify__close-button {
+    color: white;
+    opacity: 0.7;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  // Custom styles for different screen sizes
+  @include mobile {
+    .Toastify__toast {
+      margin: $spacing-sm;
+      border-radius: $border-radius;
+    }
+  }
+}

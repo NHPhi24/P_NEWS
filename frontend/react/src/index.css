@@ -1,0 +1,32 @@
+// Variables
+@import './variables';
+
+// Mixins
+@import './mixins';
+
+// Global styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: $text-color;
+  background-color: $background-color;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+// Responsive mixin usage example
+@include mobile {
+  .container {
+    padding: 0 15px;
+  }
+}

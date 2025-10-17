@@ -1,0 +1,167 @@
+.header {
+  background: white;
+  box-shadow: $shadow-sm;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  &__content {
+    @include flex-between;
+    padding: $spacing-md 0;
+  }
+
+  &__logo {
+    h1 {
+      @include gradient-text;
+      font-size: 1.75rem;
+      font-weight: $font-weight-bold;
+      margin: 0;
+    }
+  }
+
+  &__nav {
+    @include flex-between;
+    gap: $spacing-xl;
+    flex: 1;
+
+    @include mobile {
+      position: fixed;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      flex-direction: column;
+      padding: $spacing-xl;
+      box-shadow: $shadow-lg;
+      transform: translateY(-100%);
+      opacity: 0;
+      visibility: hidden;
+      transition: $transition-base;
+      gap: $spacing-lg;
+
+      &--open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+
+  &__nav-links {
+    @include flex-center;
+    gap: $spacing-xl;
+
+    @include mobile {
+      flex-direction: column;
+      gap: $spacing-lg;
+      width: 100%;
+    }
+  }
+
+  &__nav-link {
+    @include flex-center;
+    gap: $spacing-xs;
+    color: $dark-color;
+    font-weight: $font-weight-medium;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius;
+    transition: $transition-base;
+    text-decoration: none;
+
+    &:hover {
+      color: $primary-color;
+      background: rgba($primary-color, 0.1);
+    }
+
+    &--dashboard {
+      background: rgba($primary-color, 0.1);
+      color: $primary-color;
+      font-weight: $font-weight-bold;
+
+      &:hover {
+        background: $primary-color;
+        color: white;
+      }
+    }
+
+    &--register {
+      background: $primary-color;
+      color: white;
+
+      &:hover {
+        background: darken($primary-color, 10%);
+        color: white;
+      }
+    }
+  }
+
+  &__user-menu {
+    @include flex-center;
+    gap: $spacing-lg;
+
+    @include mobile {
+      flex-direction: column;
+      gap: $spacing-md;
+      width: 100%;
+      border-top: 1px solid rgba($gray-color, 0.2);
+      padding-top: $spacing-lg;
+    }
+  }
+
+  &__user-info {
+    text-align: right;
+
+    @include mobile {
+      text-align: center;
+    }
+  }
+
+  &__user-greeting {
+    display: block;
+    color: $dark-color;
+    font-weight: $font-weight-medium;
+    margin-bottom: 2px;
+  }
+
+  &__user-role {
+    display: block;
+    font-size: 0.875rem;
+    color: $secondary-color;
+  }
+
+  &__logout-btn {
+    @include flex-center;
+    gap: $spacing-xs;
+    background: $danger-color;
+    color: white;
+    border: none;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: $transition-base;
+
+    &:hover {
+      background: darken($danger-color, 10%);
+    }
+  }
+
+  &__auth-links {
+    @include flex-center;
+    gap: $spacing-md;
+  }
+
+  &__menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: $dark-color;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: $spacing-xs;
+
+    @include mobile {
+      display: block;
+    }
+  }
+}

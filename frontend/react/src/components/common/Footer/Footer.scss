@@ -1,0 +1,52 @@
+.footer {
+  background: $dark-color;
+  color: white;
+  margin-top: auto;
+
+  &__content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: $spacing-2xl;
+    padding: $spacing-2xl 0;
+
+    @include mobile {
+      grid-template-columns: 1fr;
+      gap: $spacing-xl;
+    }
+  }
+
+  &__logo {
+    @include gradient-text;
+    font-size: 1.5rem;
+    margin-bottom: $spacing-md;
+  }
+
+  &__description {
+    color: $gray-color;
+    line-height: 1.6;
+  }
+
+  &__links-title {
+    color: white;
+    margin-bottom: $spacing-md;
+    font-size: 1.125rem;
+  }
+
+  &__link {
+    display: block;
+    color: $gray-color;
+    margin-bottom: $spacing-sm;
+    transition: $transition-base;
+
+    &:hover {
+      color: white;
+    }
+  }
+
+  &__bottom {
+    border-top: 1px solid color-mix(in srgb, $dark-color, black 10%);;
+    padding: $spacing-lg 0;
+    text-align: center;
+    color: $gray-color;
+  }
+}
