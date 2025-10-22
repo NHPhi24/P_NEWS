@@ -89,7 +89,7 @@
       color: white;
 
       &:hover {
-        background: darken($primary-color, 10%);
+        background: color-mix(in srgb, $primary-color, black 10%);
         color: white;
       }
     }
@@ -142,7 +142,7 @@
     transition: $transition-base;
 
     &:hover {
-      background: darken($danger-color, 10%);
+      background: color-mix(in srgb, $danger-color, black 10%)
     }
   }
 

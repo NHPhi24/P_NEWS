@@ -146,6 +146,8 @@ export const getAdminCategories = async (req, res) => {
             SELECT * FROM categories
             ORDER BY id DESC
         `;
+
+        res.status(200).json({ success: true, data: categories });
     } catch (err) {
         console.log("Error in getAdminCategories function:", err);
         res.status(500).json({ error: err.message });

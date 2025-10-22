@@ -520,3 +520,10 @@
   &.offline { background: $danger-color; }
   &.idle { background: $warning-color; }
 }
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 20px 0;
+}

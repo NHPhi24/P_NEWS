@@ -4,7 +4,7 @@ import { addCategory,
     getCategoryById, 
     updateCategory, 
     deleteCategory } from '../controllers/categoriesController.js';
-import { isAdmin, isAuthenticated } from '../middleware/authMiddleware.js';
+import { isAdmin, isAuthenticated, isAuthorOrAdmin } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 // user routes

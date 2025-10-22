@@ -53,18 +53,30 @@ export const getCategoryById = async (req, res) => {
 // Update a category by ID
 export const updateCategory = async (req, res) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
+        const { name } = req.body;
+
         const category = await sql`
-        SELECT * FROM categories WHERE id = ${id}`;
-        if(category.length === 0) {
+            SELECT * FROM categories WHERE id = ${id}
+        `;
+        if (category.length === 0) {
             return res.status(404).json({ message: "Category not found" });
         }
-        restatus(200).json({ success: true, data: category[0] });
+
+        const updatedCategory = await sql`
+            UPDATE categories 
+            SET name = ${name}
+            WHERE id = ${id}
+            RETURNING *
+        `;
+
+        res.status(200).json({ success: true, data: updatedCategory[0] });
     } catch (err) {
         console.log("Error in updateCategory function:", err);
         res.status(500).json({ error: err.message });
     }
-}
+};
+
 
 // Delete a category by ID
 export const deleteCategory = async (req, res) => {

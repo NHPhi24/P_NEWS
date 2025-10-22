@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  FaNewspaper, 
-  FaUsers, 
-  FaEye, 
+import {
+  FaNewspaper,
+  FaUsers,
+  FaEye,
   FaUserTie,
   FaFolder,
   FaPlus,
@@ -17,12 +17,13 @@ import { useToast } from '../../../hooks/useToast';
 import { dashboardService } from '../../../services/dashboardService';
 import Loading from '../../../components/ui/Loading/Loading';
 import DataTable from '../../../components/ui/DataTable/DataTable';
+import Pagination from '../../../components/ui/Pagination/Pagination';
 import './AdminDashboard.scss';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
   const { showSuccess, showError } = useToast();
-  
+
   const [activeTab, setActiveTab] = useState('news');
   const [stats, setStats] = useState({});
   const [news, setNews] = useState([]);
@@ -32,8 +33,13 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [tableLoading, setTableLoading] = useState(false);
 
+  // phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+
   useEffect(() => {
     loadDashboardData();
+    setCurrentPage(1);
     loadTableData(activeTab);
   }, [activeTab]);
 
@@ -125,9 +131,62 @@ const AdminDashboard = () => {
     return text.substr(0, maxLength) + '...';
   };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  }
+
+  // Lấy dữ liệu cho trang hiện tại 
+  const getCurrentData = () => {
+    let data = [];
+    switch (activeTab) {
+      case 'news':
+        data = news;
+        break;
+      case 'users':
+        data = users;
+        break;
+      case 'authors':
+        data = authors;
+        break;
+      case 'categories':
+        data = categories;
+        break;
+      default:
+        break;
+    }
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return data.slice(startIndex, endIndex);
+  }
+
+  const getTotalPages = () => {
+    let data = [];
+    switch (activeTab) {
+      case 'news':
+        data = news;
+        break;
+      case 'users':
+        data = users;
+        break;
+      case 'authors':
+        data = authors;
+        break;
+      case 'categories':
+        data = categories;
+        break;
+      default:
+        break;
+    }
+    return Math.ceil(data.length / itemsPerPage);
+  }
+  // tính tổng số trang 
   if (loading) {
     return <Loading size="large" text="Đang tải dashboard..." />;
   }
+
+  const currentData = getCurrentData();
+  const totalPages = getTotalPages();
+
 
   return (
     <div className="admin-dashboard">
@@ -141,6 +200,10 @@ const AdminDashboard = () => {
           <Link to="/admin/news/create" className="btn btn-primary">
             <FaPlus />
             Thêm Tin Mới
+          </Link>
+          <Link to="/admin/categories/create" className="btn btn-primary">
+            <FaPlus />
+            Thêm Danh Mục
           </Link>
         </div>
       </div>
@@ -156,7 +219,7 @@ const AdminDashboard = () => {
             <div className="stat-label">Tổng Tin Tức</div>
           </div>
         </div>
-        
+
         <div className="stat-card success">
           <div className="stat-icon">
             <FaUsers />
@@ -166,7 +229,7 @@ const AdminDashboard = () => {
             <div className="stat-label">Người Dùng</div>
           </div>
         </div>
-        
+
         <div className="stat-card info">
           <div className="stat-icon">
             <FaUserTie />
@@ -176,7 +239,7 @@ const AdminDashboard = () => {
             <div className="stat-label">Tác Giả</div>
           </div>
         </div>
-        
+
         <div className="stat-card warning">
           <div className="stat-icon">
             <FaFolder />
@@ -210,25 +273,25 @@ const AdminDashboard = () => {
 
       {/* Tabs Navigation */}
       <div className="tabs-navigation">
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'news' ? 'active' : ''}`}
           onClick={() => setActiveTab('news')}
         >
           <FaNewspaper /> Quản lý Tin tức
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'users' ? 'active' : ''}`}
           onClick={() => setActiveTab('users')}
         >
           <FaUsers /> Quản lý Người dùng
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'authors' ? 'active' : ''}`}
           onClick={() => setActiveTab('authors')}
         >
           <FaUserTie /> Quản lý Tác giả
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'categories' ? 'active' : ''}`}
           onClick={() => setActiveTab('categories')}
         >
@@ -244,190 +307,240 @@ const AdminDashboard = () => {
           <>
             {/* News Table */}
             {activeTab === 'news' && (
-              <DataTable
-                title="Danh sách Tin tức"
-                data={news}
-                columns={[
-                  { key: 'id', label: 'ID', width: '80px' },
-                  { 
-                    key: 'title', 
-                    label: 'Tiêu đề',
-                    render: (value, row) => (
-                      <div>
-                        <div className="title-text">{truncateText(value, 60)}</div>
-                        {row.is_hot && (
-                          <span className="hot-badge">
-                            <FaFire /> Nổi bật
-                          </span>
-                        )}
-                      </div>
-                    )
-                  },
-                  { key: 'category_name', label: 'Danh mục' },
-                  { key: 'author_name', label: 'Tác giả' },
-                  { key: 'views', label: 'Lượt xem', width: '100px' },
-                  { 
-                    key: 'created_at', 
-                    label: 'Ngày tạo',
-                    render: (value) => formatDate(value)
-                  },
-                  {
-                    key: 'actions',
-                    label: 'Thao tác',
-                    width: '120px',
-                    render: (value, row) => (
-                      <div className="action-buttons">
-                        <Link 
-                          to={`/admin/news/edit/${row.id}`}
-                          className="btn-icon edit"
-                          title="Sửa"
-                        >
-                          <FaEdit />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete('news', row.id)}
-                          className="btn-icon delete"
-                          title="Xóa"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    )
-                  }
-                ]}
-                emptyMessage="Chưa có tin tức nào"
-              />
+              <>
+                <DataTable
+                  title="Danh sách Tin tức"
+                  data={currentData}
+                  columns={[
+                    { key: 'id', label: 'ID', width: '80px' },
+                    {
+                      key: 'title',
+                      label: 'Tiêu đề',
+                      render: (value, row) => (
+                        <div>
+                          <div className="title-text">{truncateText(value, 60)}</div>
+                          {row.is_hot && (
+                            <span className="hot-badge">
+                              <FaFire /> Nổi bật
+                            </span>
+                          )}
+                        </div>
+                      )
+                    },
+                    { key: 'category_name', label: 'Danh mục' },
+                    { key: 'author_name', label: 'Tác giả' },
+                    { key: 'views', label: 'Lượt xem', width: '100px' },
+                    {
+                      key: 'created_at',
+                      label: 'Ngày tạo',
+                      render: (value) => formatDate(value)
+                    },
+                    {
+                      key: 'actions',
+                      label: 'Thao tác',
+                      width: '120px',
+                      render: (value, row) => (
+                        <div className="action-buttons">
+                          <Link
+                            to={`/dashboard/admin/news/${row.id}`}
+                            className="btn-icon edit"
+                            title="Sửa"
+                          >
+                            <FaEdit />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete('news', row.id)}
+                            className="btn-icon delete"
+                            title="Xóa"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      )
+                    }
+                  ]}
+                  emptyMessage="Chưa có tin tức nào"
+                />
+                {/* phân trang */}
+                {totalPages >= 1 && (
+                  <div className="pagination-container">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                      showPageNumbers={true}
+                      showNavigation={true}
+                    />
+                  </div>
+                )}
+              </>
             )}
 
             {/* Users Table */}
             {activeTab === 'users' && (
-              <DataTable
-                title="Danh sách Người dùng"
-                data={users}
-                columns={[
-                  { key: 'id', label: 'ID', width: '80px' },
-                  { key: 'username', label: 'Tên đăng nhập' },
-                  { key: 'email', label: 'Email' },
-                  { 
-                    key: 'role', 
-                    label: 'Vai trò',
-                    render: (value) => (
-                      <span className={`role-badge ${value}`}>
-                        {value === 'admin' ? 'Quản trị' : 
-                         value === 'author' ? 'Tác giả' : 'Người dùng'}
-                      </span>
-                    )
-                  },
-                  { 
-                    key: 'created_at', 
-                    label: 'Ngày tạo',
-                    render: (value) => formatDate(value)
-                  },
-                  {
-                    key: 'actions',
-                    label: 'Thao tác',
-                    width: '120px',
-                    render: (value, row) => (
-                      <div className="action-buttons">
-                        <Link 
-                          to={`/admin/users/edit/${row.id}`}
-                          className="btn-icon edit"
-                          title="Sửa"
-                        >
-                          <FaEdit />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete('user', row.id)}
-                          className="btn-icon delete"
-                          title="Xóa"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    )
-                  }
-                ]}
-                emptyMessage="Chưa có người dùng nào"
-              />
+              <>
+                <DataTable
+                  title="Danh sách Người dùng"
+                  data={currentData}
+                  columns={[
+                    { key: 'id', label: 'ID', width: '80px' },
+                    { key: 'username', label: 'Tên đăng nhập' },
+                    { key: 'email', label: 'Email' },
+                    {
+                      key: 'role',
+                      label: 'Vai trò',
+                      render: (value) => (
+                        <span className={`role-badge ${value}`}>
+                          {value === 'admin' ? 'Quản trị' :
+                            value === 'author' ? 'Tác giả' : 'Người dùng'}
+                        </span>
+                      )
+                    },
+                    {
+                      key: 'created_at',
+                      label: 'Ngày tạo',
+                      render: (value) => formatDate(value)
+                    },
+                    {
+                      key: 'actions',
+                      label: 'Thao tác',
+                      width: '120px',
+                      render: (value, row) => (
+                        <div className="action-buttons">
+                          <Link
+                            to={`/dashboard/admin/users/${row.id}`}
+                            className="btn-icon edit"
+                            title="Sửa"
+                          >
+                            <FaEdit />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete('user', row.id)}
+                            className="btn-icon delete"
+                            title="Xóa"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      )
+                    }
+                  ]}
+                  emptyMessage="Chưa có người dùng nào"
+                />
+                {/* phân trang */}
+                {totalPages >= 1 && (
+                  <div className="pagination-container">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                )}
+              </>
             )}
 
             {/* Authors Table */}
             {activeTab === 'authors' && (
-              <DataTable
-                title="Danh sách Tác giả"
-                data={authors}
-                columns={[
-                  { key: 'id', label: 'ID', width: '80px' },
-                  { key: 'name', label: 'Tên tác giả' },
-                  { key: 'username', label: 'Tài khoản' },
-                  { key: 'email', label: 'Email' },
-                  {
-                    key: 'actions',
-                    label: 'Thao tác',
-                    width: '120px',
-                    render: (value, row) => (
-                      <div className="action-buttons">
-                        <Link 
-                          to={`/admin/authors/edit/${row.id}`}
-                          className="btn-icon edit"
-                          title="Sửa"
-                        >
-                          <FaEdit />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete('author', row.id)}
-                          className="btn-icon delete"
-                          title="Xóa"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    )
-                  }
-                ]}
-                emptyMessage="Chưa có tác giả nào"
-              />
+              <>
+                <DataTable
+                  title="Danh sách Tác giả"
+                  data={currentData}
+                  columns={[
+                    { key: 'id', label: 'ID', width: '80px' },
+                    { key: 'name', label: 'Tên tác giả' },
+                    { key: 'bio', label: 'Biography' },
+                    { key: 'user_id', label: 'ID người dùng' },
+                    {
+                      key: 'actions',
+                      label: 'Thao tác',
+                      width: '120px',
+                      render: (value, row) => (
+                        <div className="action-buttons">
+                          <Link
+                            to={`/dashboard/admin/authors/${row.id}`}
+                            className="btn-icon edit"
+                            title="Sửa"
+                          >
+                            <FaEdit />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete('author', row.id)}
+                            className="btn-icon delete"
+                            title="Xóa"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      )
+                    }
+                  ]}
+                  emptyMessage="Chưa có tác giả nào"
+                />
+                {/* phân trang */}
+                {totalPages >= 1 && (
+                  <div className="pagination-container">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                )}
+              </>
             )}
 
             {/* Categories Table */}
             {activeTab === 'categories' && (
-              <DataTable
-                title="Danh sách Danh mục"
-                data={categories}
-                columns={[
-                  { key: 'id', label: 'ID', width: '80px' },
-                  { key: 'name', label: 'Tên danh mục' },
-                  { 
-                    key: 'created_at', 
-                    label: 'Ngày tạo',
-                    render: (value) => formatDate(value)
-                  },
-                  {
-                    key: 'actions',
-                    label: 'Thao tác',
-                    width: '120px',
-                    render: (value, row) => (
-                      <div className="action-buttons">
-                        <Link 
-                          to={`/admin/categories/edit/${row.id}`}
-                          className="btn-icon edit"
-                          title="Sửa"
-                        >
-                          <FaEdit />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete('category', row.id)}
-                          className="btn-icon delete"
-                          title="Xóa"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    )
-                  }
-                ]}
-                emptyMessage="Chưa có danh mục nào"
-              />
+              <>
+                <DataTable
+                  title="Danh sách Danh mục"
+                  data={currentData}
+                  columns={[
+                    { key: 'id', label: 'ID', width: '80px' },
+                    { key: 'name', label: 'Tên danh mục' },
+                    {
+                      key: 'created_at',
+                      label: 'Ngày tạo',
+                      render: (value) => formatDate(value)
+                    },
+                    {
+                      key: 'actions',
+                      label: 'Thao tác',
+                      width: '120px',
+                      render: (value, row) => (
+                        <div className="action-buttons">
+                          <Link
+                            to={`/dashboard/admin/categories/${row.id}`}
+                            className="btn-icon edit"
+                            title="Sửa"
+                          >
+                            <FaEdit />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete('category', row.id)}
+                            className="btn-icon delete"
+                            title="Xóa"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      )
+                    }
+                  ]}
+                  emptyMessage="Chưa có danh mục nào"
+                />
+                {/* phân trang */}
+                {totalPages >= 1 && (
+                  <div className="pagination-container">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                )}
+              </>
             )}
           </>
         )}

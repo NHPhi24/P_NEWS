@@ -11,7 +11,16 @@ import Register from './pages/Auth/Register'
 import AdminDashboard from './pages/Admin/Dashboard/AdminDashboard'
 import AuthorDashboard from './pages/Author/Dashboard/AuthorDashboard'
 import { AuthProvider } from './hooks/useAuth'
+import NewsCreate from './pages/Admin/News/NewsCreate'
+import NewsEdit from './pages/Admin/news/NewsEdit'
 import './App.scss'
+import UserEdit from './pages/Admin/Users/UserEdit'
+import AuthorEdit from './pages/Admin/Authors/AuthorEdit'
+import CategoryCreate from './pages/Admin/Category/CategoryCreate'
+import CategoryEdit from './pages/Admin/Category/CategoryEdit'
+import NewsEditAuthor from './pages/Author/News/NewsEditAuthor'
+import NewsCreateAuthor from './pages/Author/News/NewsCreateAuthor'
+import Contact from './pages/Contact/Contact'
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -49,7 +58,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/category/:id" element={<Home />} />
-            
+            <Route path='/contact' element={<Contact />} />
             {/* Protected Dashboard Routes */}
             <Route 
               path="/admin/dashboard" 
@@ -67,6 +76,78 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+
+            <Route 
+              path="/admin/news/create" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <NewsCreate />
+                </ProtectedRoute>
+              }
+            />
+            <Route 
+              path="/admin/categories/create" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <CategoryCreate/>
+                </ProtectedRoute>
+              }
+            />
+            <Route 
+              path="/dashboard/admin/news/:id" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <NewsEdit />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route 
+              path="/dashboard/admin/users/:id" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <UserEdit/>
+                </ProtectedRoute>
+              }
+            />
+            <Route 
+              path="/dashboard/admin/authors/:id" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AuthorEdit/>
+                </ProtectedRoute>
+              }
+            />
+            <Route 
+              path="/dashboard/admin/categories/:id" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <CategoryEdit/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route 
+              path="/author/news/create" 
+              element={
+                <ProtectedRoute requiredRole="author">
+                  <NewsCreateAuthor/>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route 
+              path="/dashboard/author/news/:id" 
+              element={
+                <ProtectedRoute requiredRole="author">
+                  <NewsEditAuthor/>
+                </ProtectedRoute>
+              }
+            />
+
+
+            
+            
             
             {/* Redirects */}
             <Route path="/dashboard" element={<Navigate to="/admin/dashboard" replace />} />

@@ -16,7 +16,6 @@ const Footer = () => {
           <div className="footer__links">
             <h4 className="footer__links-title">Liên kết nhanh</h4>
             <a href="/" className="footer__link">Trang chủ</a>
-            <a href="/about" className="footer__link">Về chúng tôi</a>
             <a href="/contact" className="footer__link">Liên hệ</a>
           </div>
         </div>

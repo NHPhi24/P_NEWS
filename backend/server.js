@@ -26,79 +26,56 @@ app.use(helmet({
     contentSecurityPolicy:false, //increase security header 
 }))
 app.use(morgan("dev")); //log the requests
-app.use(cors(
-{origin: 'http://localhost:5173', credentials: true}
-)) //allow frontend access backend
-app.use(async (req, res, next) => {
-    try {
-        const decision = await aj.protect(req, {
-            requested: 1, // specifies that each request consumes 1 token
-        });
 
-        if (decision.isDenied()) {
-            if (decision.reason.isRateLimit()) {
-                res.status(429).json({ error: "Too Many Requests" });
-            } else if (decision.reason.isBot()) {
-                res.status(403).json({ error: "Bot access denied" });
-            } else {
-                res.status(403).json({ error: "Forbidden" });
-            }
-            return;
-        }
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+); //allow frontend access backend
 
-        // check for spoofed bots
-        if (decision.results.some((result) => result.reason.isBot() && result.reason.isSpoofed())) {
-            res.status(403).json({ error: "Spoofed bot detected" });
-            return;
-        }
-
-        next();
-    } catch (error) {
-        console.log("Arcjet error", error);
-        next(error);
-    }
-});
 //config session 
 app.use(
     session({
         secret: process.env.SECRET_KEY,
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
+        httpOnly: true,
         cookie: { 
             httpOnly: true, // bảo mật: cookie không bị JS đọc
-            maxAge: 1000 * 60 * 60, // 1 tiếng    
-         }, // 1 day
+            maxAge: 1000 * 60 * 60 * 24, // 1 tiếng    
+        }, // 1 day
     })
 )
-
+// arcjet
 // app.use(async (req, res, next) => {
-//   try {
-//     const decision = await aj.protect(req, {
-//       requested: 1, // specifies that each request consumes 1 token
-//     });
+//     try {
+//         const decision = await aj.protect(req, {
+//             requested: 1, // specifies that each request consumes 1 token
+//         });
 
-//     if (decision.isDenied()) {
-//       if (decision.reason.isRateLimit()) {
-//         res.status(429).json({ error: "Too Many Requests" });
-//       } else if (decision.reason.isBot()) {
-//         res.status(403).json({ error: "Bot access denied" });
-//       } else {
-//         res.status(403).json({ error: "Forbidden" });
-//       }
-//       return;
+//         if (decision.isDenied()) {
+//             if (decision.reason.isRateLimit()) {
+//                 res.status(429).json({ error: "Too Many Requests" });
+//             } else if (decision.reason.isBot()) {
+//                 res.status(403).json({ error: "Bot access denied" });
+//             } else {
+//                 res.status(403).json({ error: "Forbidden" });
+//             }
+//             return;
+//         }
+
+//         // check for spoofed bots
+//         if (decision.results.some((result) => result.reason.isBot() && result.reason.isSpoofed())) {
+//             res.status(403).json({ error: "Spoofed bot detected" });
+//             return;
+//         }
+
+//         next();
+//     } catch (error) {
+//         console.log("Arcjet error", error);
+//         next(error);
 //     }
-
-//     // check for spoofed bots
-//     if (decision.results.some((result) => result.reason.isBot() && result.reason.isSpoofed())) {
-//       res.status(403).json({ error: "Spoofed bot detected" });
-//       return;
-//     }
-
-//     next();
-//   } catch (error) {
-//     console.log("Arcjet error", error);
-//     next(error);
-//   }
 // });
 
 app.use("/api/news",  newsRoutes);
@@ -106,9 +83,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRouter);
 app.use("/api/authors", authorsRouter);
 app.use("/api/categories", categoriesRouter);
+// dashboard routes
 app.use("/api/dashboard/admin", adminDashboardRoutes)
 app.use("/api/dashboard/author", authorDashboardRoutes)
-
 
 initDB().then(() => {
     app.listen(port, () => {

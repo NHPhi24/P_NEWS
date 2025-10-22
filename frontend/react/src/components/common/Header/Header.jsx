@@ -39,6 +39,9 @@ const Header = () => {
               <Link to="/" className="header__nav-link" onClick={handleLinkClick}>
                 Trang chủ
               </Link>
+              <Link to="/contact" className="header__nav-link" onClick={handleLinkClick}>
+                Liên hệ chúng tôi
+              </Link>
               
               {/* Dashboard Links for Admin/Author */}
               {isAuthenticated && (isAdmin || isAuthor) && (

@@ -1,33 +1,37 @@
 import api from './api';
+import { toastService } from './toastService';
 
 export const dashboardService = {
+  // ========== ADMIN DASHBOARD ==========
+  
   // Admin Dashboard - Stats
   getAdminStats: async () => {
     const response = await api.get('/dashboard/admin/stats');
     return response.data;
   },
 
-  getAdminNews: async (page = 1, limit = 10) => {
+  getAdminNews: async (page = 1, limit = 100) => {
     const response = await api.get(`/dashboard/admin/news?page=${page}&limit=${limit}`);
     return response.data;
   },
 
-  getAdminUsers: async (page = 1, limit = 10) => {
+  getAdminUsers: async (page = 1, limit = 100) => {
     const response = await api.get(`/dashboard/admin/users?page=${page}&limit=${limit}`);
     return response.data;
   },
 
-  getAdminAuthors: async (page = 1, limit = 10) => {
+  getAdminAuthors: async (page = 1, limit = 100) => {
     const response = await api.get(`/dashboard/admin/authors?page=${page}&limit=${limit}`);
     return response.data;
   },
 
-  getAdminCategories: async (page = 1, limit = 10) => {
-    const response = await api.get(`/dashboard/admin/categories?page=${page}&limit=${limit}`);
+  getAdminCategories: async () => {
+    const response = await api.get('/dashboard/admin/categories');
     return response.data;
   },
 
-  // Author Dashboard
+  // ========== AUTHOR DASHBOARD ==========
+  
   getAuthorStats: async () => {
     const response = await api.get('/dashboard/author/stats');
     return response.data;
@@ -38,121 +42,189 @@ export const dashboardService = {
     return response.data;
   },
 
-  // ========== CRUD OPERATIONS ==========
+  // ========== ADMIN CRUD OPERATIONS ==========
 
-  // NEWS CRUD
+  // NEWS CRUD - Admin
   createNews: async (newsData) => {
-    const response = await api.post('/api/news', newsData);
-    return response.data;
-  },
-
-  getNewsById: async (id) => {
-    const response = await api.get(`/api/news/${id}`);
-    return response.data;
+    try {
+      const response = await api.post('/dashboard/admin/news', newsData);
+      toastService.success('Tạo tin tức mới thành công!');
+      return response.data;
+    } catch (err) {
+      toastService.error('Không thể tạo tin tức');
+      console.log("Error craeteNews function in dashboard", err)
+      throw err;
+    }
+    
   },
 
   updateNews: async (id, newsData) => {
-    const response = await api.put(`/api/news/${id}`, newsData);
-    return response.data;
+    try {
+      const response = await api.put(`/dashboard/admin/news/${id}`, newsData);
+      toastService.success('Cập nhật tin tức thông công!');
+      return response.data;
+    } catch (err) {
+      toastService.error('Không thể cập nhật tin tức');
+      console.log("Error updateNews function in dashboard", err)
+      throw err;
+    }
   },
 
   deleteNews: async (id) => {
-    const response = await api.delete(`/api/news/${id}`);
-    return response.data;
+    try {
+      const response = await api.delete(`/dashboard/admin/news/${id}`);
+      toastService.success('Xóa tin tức thành công!');
+      return response.data;
+    } catch (err) {
+      toastService.error('Không thể xóa tin tức');
+      console.log("Error deleteNews function in dashboard",err)
+      throw err;
+    }
+    
   },
 
-  // USER CRUD
-  createUser: async (userData) => {
-    const response = await api.post('/api/auth/register', userData);
-    return response.data;
-  },
-
-  getUserById: async (id) => {
-    const response = await api.get(`/api/users/${id}`);
-    return response.data;
-  },
-
+  // USER CRUD - Admin
   updateUser: async (id, userData) => {
-    const response = await api.put(`/api/users/${id}`, userData);
-    return response.data;
+    try {
+      const response = await api.put(`/dashboard/admin/users/${id}`, userData);
+      toastService.success('Cập nhật người dụng thành công!');
+      return response.data;
+    } catch (err) {
+      console.log("Error updateUser function in dashboard", err)
+      toastService.error('Không thể cập nhật người dụng');
+      throw err;
+    }
   },
 
   deleteUser: async (id) => {
-    const response = await api.delete(`/api/users/${id}`);
-    return response.data;
+    try {
+      const response = await api.delete(`/dashboard/admin/users/${id}`);
+      toastService.success('Xóa người dụng thành cong!');
+      return response.data; 
+    } catch (err) {
+      toastService.error('Không thể xóa người dụng');
+      console.log("Error deleteUser function in dashboard",err)
+      throw err;
+    }
   },
 
-  // AUTHOR CRUD
+  // AUTHOR CRUD - Admin
   createAuthor: async (authorData) => {
-    const response = await api.post('/api/authors', authorData);
-    return response.data;
-  },
-
-  getAuthorById: async (id) => {
-    const response = await api.get(`/api/authors/${id}`);
-    return response.data;
+    try {
+      const response = await api.post('/dashboard/admin/authors', authorData);
+      toastService.success('Tạo tác giả mới thành công!');
+      return response.data;
+    } catch (err) {
+      toastService.error('Không thể tạo tác giả');
+      console.log("Error createAuthor function in dashboard", err)
+      throw err;
+    }
   },
 
   updateAuthor: async (id, authorData) => {
-    const response = await api.put(`/api/authors/${id}`, authorData);
-    return response.data;
+    try {
+      const response = await api.put(`/dashboard/admin/authors/${id}`, authorData);
+      toastService.success('Cập nhật tác giả thành công!');
+      return response.data;
+    } catch (err) {
+      toastService.error('Không thể cập nhật tác giả');
+      console.log("Error updateAuthor function in dashboard", err)
+      throw err;
+    }
+    
   },
 
   deleteAuthor: async (id) => {
-    const response = await api.delete(`/api/authors/${id}`);
-    return response.data;
+    try {
+      const response = await api.delete(`/dashboard/admin/authors/${id}`);
+      toastService.success('Xóa tác giả thành công!');
+      return response.data;
+    } catch (err) {
+      toastService.error('Không thể xóa tác giả');
+      console.log("Error deleteAuthor function in dashboard", err)
+      throw err;
+    }
   },
 
-  // CATEGORY CRUD
+  // CATEGORY CRUD - Admin
   createCategory: async (categoryData) => {
-    const response = await api.post('/api/categories', categoryData);
-    return response.data;
-  },
-
-  getCategoryById: async (id) => {
-    const response = await api.get(`/api/categories/${id}`);
-    return response.data;
+    try {
+      const response = await api.post('/dashboard/admin/categories', categoryData);
+      toastService.success('Tạo danh mục mới thành công!');
+      return response.data;
+    } catch (err) {
+      toastService.error('Không thể tạo danh mục');
+      console.log("Error createCategory function in dashboard", err)
+      throw err;
+    }
   },
 
   updateCategory: async (id, categoryData) => {
-    const response = await api.put(`/api/categories/${id}`, categoryData);
-    return response.data;
+    try {
+      const response = await api.put(`/dashboard/admin/categories/${id}`, categoryData);
+      toastService.success('Cập nhật danh mục thành công!');
+      return response.data;
+    } catch (err) {
+      toastService.error('Không thể cập nhật danh mục');
+      console.log("Error updateCategory function in dashboard", err)
+      throw err;
+    }
   },
 
   deleteCategory: async (id) => {
-    const response = await api.delete(`/api/categories/${id}`);
-    return response.data;
+    try {
+      const response = await api.delete(`/dashboard/admin/categories/${id}`);
+      return response.data;
+      
+    } catch (err) {
+      toastService.error('Không thể xóa danh mục');
+      console.log("Error deleteCategory function in dashboard", err)
+      throw err;
+    }
   },
 
-  // PROFILE CRUD (for authors)
-  getAuthorProfile: async () => {
-    const response = await api.get('/api/authors/profile');
-    return response.data;
+  // ========== AUTHOR DASHBOARD CRUD ==========
+  
+  // Author news management (chỉ cho author)
+  createAuthorNews: async (newsData) => {
+    try {
+      const response = await api.post('/dashboard/author/news', newsData);
+      toastService.success('Tạo tin tức mới thành công!');
+      return response.data;
+      
+    } catch (err) {
+      toastService.error('Không thể tạo tin tức');
+      console.log("Error createAuthorNews function in dashboard", err)
+      throw err;
+    }
   },
 
-  updateAuthorProfile: async (profileData) => {
-    const response = await api.put('/api/authors/profile', profileData);
-    return response.data;
+  updateAuthorNews: async (id, newsData) => {
+    try {
+      const response = await api.put(`/dashboard/author/news/${id}`, newsData);
+      toastService.success('Cập nhật tin tức thành công!');
+      return response.data;
+      
+    } catch (err) {
+      toastService.error('Không thể cập nhật tin tức');
+      console.log("Error updateAuthorNews function in dashboard", err)
+      throw err;
+      
+    }
   },
 
-  // ADDITIONAL UTILITIES
-  uploadImage: async (formData) => {
-    const response = await api.post('/api/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
+  deleteAuthorNews: async (id) => {
+    try {
+      const response = await api.delete(`/dashboard/author/news/${id}`);
+      toastService.success('Xóa tin tức thành công!');
+      return response.data;
+      
+    } catch (err) {
+      toastService.error('Không thể xóa tin tức');
+      console.log("Error deleteAuthorNews function in dashboard", err)
+      throw err;
+    }
   },
-
-  // BULK OPERATIONS
-  bulkDeleteNews: async (ids) => {
-    const response = await api.post('/api/news/bulk-delete', { ids });
-    return response.data;
-  },
-
-  bulkUpdateNewsStatus: async (ids, status) => {
-    const response = await api.post('/api/news/bulk-update-status', { ids, status });
-    return response.data;
-  }
 };
+
+export default dashboardService;

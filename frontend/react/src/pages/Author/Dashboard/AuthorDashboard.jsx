@@ -9,13 +9,15 @@ import {
   FaFire,
   FaUserEdit,
   FaChartLine,
-  FaSync
+  FaSync,
+  FaHome
 } from 'react-icons/fa';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../hooks/useToast';
 import { dashboardService } from '../../../services/dashboardService';
 import Loading from '../../../components/ui/Loading/Loading';
 import DataTable from '../../../components/ui/DataTable/DataTable';
+import Pagination from '../../../components/ui/Pagination/Pagination';
 import './AuthorDashboard.scss';
 
 const AuthorDashboard = () => {
@@ -33,6 +35,10 @@ const AuthorDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [tableLoading, setTableLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  // phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   useEffect(() => {
     loadDashboardData();
@@ -140,6 +146,26 @@ const AuthorDashboard = () => {
     );
   }
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // lấy dữ liệu cho trang hiện tại
+  const getCurrentData = () => {
+    const startIndex = (currentPage -1 ) *itemsPerPage
+    const endIndex = startIndex + itemsPerPage;
+    return news.slice(startIndex, endIndex);
+  }
+
+  // tổng số sang
+  const getTotalPages = () => { 
+    return Math.ceil(news.length / itemsPerPage);
+  }
+
+  if(loading) return <Loading text="Đang tải dashboard..." />
+  const currentData = getCurrentData();
+  const totalPages = getTotalPages();
+
   return (
     <div className="author-dashboard">
       {/* Header */}
@@ -224,7 +250,7 @@ const AuthorDashboard = () => {
           className={`tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
           onClick={() => setActiveTab('profile')}
         >
-          <FaUserEdit /> Chỉnh sửa Hồ sơ
+          <FaUserEdit /> Xem Hồ sơ
         </button>
       </div>
 
@@ -247,6 +273,7 @@ const AuthorDashboard = () => {
                     { 
                       key: 'title', 
                       label: 'Tiêu đề',
+                      width: '460px',
                       render: (value, row) => (
                         <div className="title-cell">
                           <div className="title-text">{truncateText(value, 60)}</div>
@@ -275,7 +302,7 @@ const AuthorDashboard = () => {
                       render: (value, row) => (
                         <div className="action-buttons">
                           <Link 
-                            to={`/author/news/edit/${row.id}`}
+                            to={`/dashboard/author/news/${row.id}`}
                             className="btn-icon edit"
                             title="Sửa tin"
                           >
@@ -303,6 +330,16 @@ const AuthorDashboard = () => {
                     </div>
                   }
                 />
+                {/* Phân trang */}
+                <div className="pagination-container">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    showPageNumbers={true}
+                    showNavigation={true}
+                  />
+                </div>
               </div>
             )}
 
@@ -312,7 +349,7 @@ const AuthorDashboard = () => {
                 <div className="profile-card">
                   <div className="profile-header">
                     <FaUserEdit size={24} />
-                    <h3>Chỉnh sửa Hồ sơ Tác giả</h3>
+                    <h3>Xem Hồ sơ Tác giả</h3>
                   </div>
                   <div className="profile-content">
                     <p>Quản lý thông tin cá nhân và hồ sơ tác giả của bạn.</p>
@@ -329,12 +366,9 @@ const AuthorDashboard = () => {
                     </div>
                   </div>
                   <div className="profile-actions">
-                    <Link to="/author/profile/edit" className="btn btn-primary">
-                      <FaUserEdit />
-                      Cập nhật Hồ sơ
-                    </Link>
-                    <Link to="/author/profile/password" className="btn btn-secondary">
-                      Đổi Mật khẩu
+                    <Link to="/" className="btn btn-primary">
+                      <FaHome />
+                      Quay lại trang chủ
                     </Link>
                   </div>
                 </div>
