@@ -27,9 +27,9 @@ export const categoryService = {
   // Tạo danh mục mới (admin)
   createCategory: async(categoryData) =>{  
     try {
-      const reposne = await api.post('/categories', categoryData);
-      toastService.success("Tạo danh mục thành cong!");
-      return reposne.data;
+      const reponse = await api.post('/categories', categoryData);
+      toastService.success("Tạo danh mục thành công!");
+      return reponse.data;
     } catch (error) {
       toastService.error("Không thể tạo danh mục");
       throw error;

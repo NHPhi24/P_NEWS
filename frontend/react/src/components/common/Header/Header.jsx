@@ -64,27 +64,42 @@ const Header = () => {
                 </Link>
               )}
             </div>
+            
 
             {/* User Menu */}
             {isAuthenticated ? (
               <div className="header__user-menu">
                 <div className="header__user-info">
                   <span className="header__user-greeting">
-                    Xin chào, <strong>{user?.username}</strong>
+                    Xin chào, <strong>{user?.username}
+                    </strong>
                   </span>
+                    <div className="header__user-information">
+                      <ul>
+                        <li>
+                          <Link to="/profile" className="header__nav-link" onClick={handleLinkClick}>
+                            <FaUserTie />
+                            Thông tin người dùng
+                          </Link>
+                        </li>
+                        <li>
+                        <button 
+                          onClick={handleLogout}
+                          className="header__logout-btn"
+                        >
+                          <FaSignOutAlt />
+                          Đăng xuất
+                        </button>
+                        </li>
+                      </ul>
+                    </div>
                   <span className="header__user-role">
                     {user?.role === 'admin' && '(Quản trị viên)'}
                     {user?.role === 'author' && '(Tác giả)'}
                     {user?.role === 'user' && '(Người dùng)'}
                   </span>
                 </div>
-                <button 
-                  onClick={handleLogout}
-                  className="header__logout-btn"
-                >
-                  <FaSignOutAlt />
-                  Đăng xuất
-                </button>
+                
               </div>
             ) : (
               <div className="header__auth-links">

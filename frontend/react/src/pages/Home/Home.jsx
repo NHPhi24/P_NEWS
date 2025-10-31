@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { newsService } from '../../services/newsService';
 import { categoryService } from '../../services/categoryService';
 import NewsCard from '../../components/news/NewsCard/NewsCard';
 import Loading from '../../components/ui/Loading/Loading';
-import Pagination from '../../components/ui/Pagination/Pagination';
 import SearchBox from '../../components/ui/SearchBox/SearchBox';
 import { FaFire, FaFilter, FaNewspaper, FaChartBar, FaEye, FaSearch } from 'react-icons/fa';
 import './Home.scss';
 
 const Home = () => {
-  const [news, setNews] = useState([]);
+  const [allNews, setAllNews] = useState([]); // toàn bộ tin tức
+  const [filteredNews, setFilteredNews] = useState([]); // tin đã lọc
+  const [displayedNews, setDisplayedNews] = useState([]); // tin đang hiển thị
   const [hotNews, setHotNews] = useState([]);
   const [topViewedNews, setTopViewedNews] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -19,23 +20,25 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [activeFilter, setActiveFilter] = useState('all');
   
-  // State phân trang
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(9);
-  const [totalItems, setTotalItems] = useState(0);
-
-  // State search
+  // search
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
+  // infinite scroll
+  const [loadingMore, setLoadingMore] = useState(false);
+  const isLoadingRef = useRef(false);
+
+  const itemsPerPage = 12;
+
+  // Load dữ liệu ban đầu
   useEffect(() => {
     loadHomeData();
   }, []);
 
+  // Mỗi khi allNews / category / searchTerm thay đổi → cập nhật danh sách hiển thị
   useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedCategory, searchTerm]);
+    updateDisplayedNews();
+  }, [allNews, selectedCategory, searchTerm, isSearching]);
 
   const loadHomeData = async () => {
     try {
@@ -48,77 +51,89 @@ const Home = () => {
         categoryService.getAllCategories()
       ]);
 
-      const allNews = newsResponse.data || [];
-      setNews(allNews);
-      setTotalItems(allNews.length);
+      const allNewsData = newsResponse.data || [];
+      setAllNews(allNewsData);
       setHotNews(hotNewsResponse.data || []);
       setCategories(categoriesResponse.data || []);
       
-      // Get top 5 most viewed news
-      const topViewed = allNews
+      const topViewed = allNewsData
         .sort((a, b) => (b.views || 0) - (a.views || 0))
         .slice(0, 5);
       setTopViewedNews(topViewed);
-      
     } catch (err) {
-      const errorMessage = 'Không thể tải dữ liệu tin tức';
-      setError(errorMessage);
+      setError('Không thể tải dữ liệu tin tức');
       console.error('Error loading home data:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Hàm tìm kiếm
+  // Cập nhật danh sách tin đã lọc và hiển thị
+  const updateDisplayedNews = () => {
+    let filtered = allNews;
+
+    // Lọc theo từ khóa
+    if (isSearching && searchTerm) {
+      filtered = filtered.filter(item =>
+        item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.author_name?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Lọc theo danh mục
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(item => item.category_id == selectedCategory);
+    }
+
+    setFilteredNews(filtered);
+    setDisplayedNews(filtered.slice(0, itemsPerPage));
+  };
+
+  // Infinite scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isLoadingRef.current || isSearching || loadingMore || loading) return;
+
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+
+      if (scrollTop + windowHeight >= documentHeight - 100) {
+        loadMoreNews();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [filteredNews, displayedNews, isSearching, loadingMore, loading]);
+
+  const loadMoreNews = () => {
+    if (isLoadingRef.current || isSearching) return;
+    if (displayedNews.length >= filteredNews.length) return;
+
+    isLoadingRef.current = true;
+    setLoadingMore(true);
+
+    setTimeout(() => {
+      const nextNews = filteredNews.slice(
+        displayedNews.length,
+        displayedNews.length + itemsPerPage
+      );
+      setDisplayedNews(prev => [...prev, ...nextNews]);
+      setLoadingMore(false);
+      isLoadingRef.current = false;
+    }, 800);
+  };
+
+  // Xử lý tìm kiếm
   const handleSearch = (term) => {
     setSearchTerm(term);
-    setIsSearching(!!term.trim());
-    
-    if (term.trim() === '') {
-      setSearchResults([]);
-      setIsSearching(false);
-      return;
-    }
-
-    const filtered = news.filter(item => 
-      item.title.toLowerCase().includes(term.toLowerCase()) ||
-      item.content.toLowerCase().includes(term.toLowerCase()) ||
-      (item.author_name && item.author_name.toLowerCase().includes(term.toLowerCase()))
-    );
-    
-    setSearchResults(filtered);
+    const searching = !!term.trim();
+    setIsSearching(searching);
   };
 
-  // Lọc tin tức theo category và search
-  const filteredNews = () => {
-    if (isSearching && searchTerm) {
-      return searchResults;
-    }
-    
-    return selectedCategory === 'all' 
-      ? news 
-      : news.filter(item => item.category_id == selectedCategory);
-  };
-
-  // Tính toán tin tức cho trang hiện tại
-  const getCurrentNews = () => {
-    const allFilteredNews = filteredNews();
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return allFilteredNews.slice(startIndex, endIndex);
-  };
-
-  // Cập nhật tổng số items
-  useEffect(() => {
-    const allFilteredNews = filteredNews();
-    setTotalItems(allFilteredNews.length);
-    
-    const totalPages = Math.ceil(allFilteredNews.length / itemsPerPage);
-    if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(1);
-    }
-  }, [selectedCategory, searchTerm, news]);
-
+  // Chuyển danh mục
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
     setActiveFilter(categoryId);
@@ -126,16 +141,12 @@ const Home = () => {
     setIsSearching(false);
   };
 
+  // Hiển thị tất cả
   const handleShowAll = () => {
     setSelectedCategory('all');
     setActiveFilter('all');
     setSearchTerm('');
     setIsSearching(false);
-  };
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const formatDate = (dateString) => {
@@ -144,9 +155,10 @@ const Home = () => {
 
   const truncateText = (text, maxLength) => {
     if (!text) return '';
-    if (text.length <= maxLength) return text;
-    return text.substr(0, maxLength) + '...';
+    return text.length <= maxLength ? text : text.substr(0, maxLength) + '...';
   };
+
+  const hasMore = displayedNews.length < filteredNews.length && !isSearching;
 
   if (loading) {
     return (
@@ -172,10 +184,6 @@ const Home = () => {
     );
   }
 
-  const currentNews = getCurrentNews();
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const allFilteredNews = filteredNews();
-
   return (
     <div className="home">
       <div className="container">
@@ -188,8 +196,6 @@ const Home = () => {
             <p className="home__subtitle">
               Khám phá những tin tức mới nhất và nóng hổi nhất trong ngày
             </p>
-            
-            {/* Search Box */}
             <div className="home__search">
               <SearchBox
                 placeholder="Tìm kiếm tin tức, tác giả..."
@@ -202,25 +208,24 @@ const Home = () => {
 
         <div className="home__content">
           <div className="home__main">
-            {/* Hot News Section */}
+            {/* Tin nổi bật */}
             {hotNews.length > 0 && !isSearching && (
               <section className="hot-news-section">
                 <div className="section-header">
                   <h2 className="section-title">
-                    <FaFire className="section-title__icon" />
-                    Tin Nổi Bật
+                    <FaFire className="section-title__icon" /> Tin Nổi Bật
                   </h2>
                   <div className="section-divider"></div>
                 </div>
                 <div className="hot-news-grid">
-                  {hotNews.map((newsItem) => (
-                    <NewsCard key={newsItem.id} news={newsItem} />
+                  {hotNews.map((item) => (
+                    <NewsCard key={item.id} news={item} />
                   ))}
                 </div>
               </section>
             )}
 
-            {/* Categories Filter & All News */}
+            {/* Tất cả tin */}
             <section className="all-news-section">
               <div className="section-header">
                 <h2 className="section-title">
@@ -230,7 +235,7 @@ const Home = () => {
                 <div className="section-divider"></div>
               </div>
 
-              {/* Categories Filter - Ẩn khi đang tìm kiếm */}
+              {/* Lọc danh mục */}
               {!isSearching && (
                 <div className="categories-filter">
                   <div className="categories-filter__header">
@@ -243,9 +248,8 @@ const Home = () => {
                       onClick={handleShowAll}
                     >
                       Tất cả
-                      <span className="filter-count">({news.length})</span>
+                      <span className="filter-count">({allNews.length})</span>
                     </button>
-                    
                     {categories.map((category) => (
                       <button
                         key={category.id}
@@ -254,7 +258,7 @@ const Home = () => {
                       >
                         {category.name}
                         <span className="filter-count">
-                          ({news.filter(item => item.category_id == category.id).length})
+                          ({allNews.filter(item => item.category_id == category.id).length})
                         </span>
                       </button>
                     ))}
@@ -262,66 +266,49 @@ const Home = () => {
                 </div>
               )}
 
-              {/* Search Info */}
+              {/* Kết quả tìm kiếm */}
               {isSearching && (
                 <div className="search-info">
                   <div className="search-info__content">
                     <FaSearch className="search-info__icon" />
                     <span>
-                      Tìm thấy <strong>{allFilteredNews.length}</strong> kết quả cho từ khóa: 
+                      Tìm thấy <strong>{filteredNews.length}</strong> kết quả cho từ khóa: 
                       <strong> "{searchTerm}"</strong>
                     </span>
-                    <button 
-                      onClick={handleShowAll}
-                      className="btn btn--outline btn--small"
-                    >
+                    <button onClick={handleShowAll} className="btn btn--outline btn--small">
                       Hiển thị tất cả
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* News Grid với phân trang */}
+              {/* News grid */}
               <div className="news-section">
                 <div className="news-section__header">
                   <h3 className="news-section__title">
-                    {isSearching 
-                      ? `Kết quả tìm kiếm` 
-                      : selectedCategory === 'all' 
-                        ? 'Tất cả tin tức' 
-                        : `Tin tức ${categories.find(cat => cat.id == selectedCategory)?.name}`
-                    }
+                    {isSearching
+                      ? 'Kết quả tìm kiếm'
+                      : selectedCategory === 'all'
+                        ? 'Tất cả tin tức'
+                        : `Tin tức ${categories.find(cat => cat.id == selectedCategory)?.name}`}
                     <span className="news-count">
-                      ({totalItems} tin{totalPages > 1 && ` - Trang ${currentPage}/${totalPages}`})
+                      ({filteredNews.length} tin{hasMore && ' - Cuộn để xem thêm'})
                     </span>
                   </h3>
                 </div>
-                
-                {currentNews.length === 0 ? (
+
+                {displayedNews.length === 0 ? (
                   <div className="no-news">
                     <div className="no-news__content">
                       <FaNewspaper className="no-news__icon" />
-                      <h4>
-                        {isSearching ? 'Không tìm thấy kết quả' : 'Không có tin tức'}
-                      </h4>
+                      <h4>{isSearching ? 'Không tìm thấy kết quả' : 'Không có tin tức'}</h4>
                       <p>
-                        {isSearching 
+                        {isSearching
                           ? `Không tìm thấy tin tức nào phù hợp với từ khóa "${searchTerm}"`
-                          : 'Không tìm thấy tin tức nào trong danh mục này.'
-                        }
+                          : 'Không có tin tức nào trong danh mục này.'}
                       </p>
-                      {isSearching ? (
-                        <button 
-                          onClick={handleShowAll}
-                          className="btn btn--primary"
-                        >
-                          Xem tất cả tin tức
-                        </button>
-                      ) : selectedCategory !== 'all' && (
-                        <button 
-                          onClick={handleShowAll}
-                          className="btn btn--primary"
-                        >
+                      {(isSearching || selectedCategory !== 'all') && (
+                        <button onClick={handleShowAll} className="btn btn--primary">
                           Xem tất cả tin tức
                         </button>
                       )}
@@ -330,21 +317,20 @@ const Home = () => {
                 ) : (
                   <>
                     <div className="news-grid">
-                      {currentNews.map((newsItem) => (
+                      {displayedNews.map((newsItem) => (
                         <NewsCard key={newsItem.id} news={newsItem} />
                       ))}
                     </div>
 
-                    {/* Phân trang */}
-                    {totalPages > 1 && (
-                      <div className="news-pagination">
-                        <Pagination
-                          currentPage={currentPage}
-                          totalPages={totalPages}
-                          onPageChange={handlePageChange}
-                          showPageNumbers={true}
-                          showNavigation={true}
-                        />
+                    {loadingMore && (
+                      <div className="loading-more">
+                        <Loading size="medium" text="Đang tải thêm tin tức..." />
+                      </div>
+                    )}
+
+                    {!hasMore && displayedNews.length > 0 && (
+                      <div className="no-more-news">
+                        <p>Đã hiển thị tất cả tin tức</p>
                       </div>
                     )}
                   </>
@@ -353,68 +339,61 @@ const Home = () => {
             </section>
           </div>
 
-          {/* Sidebar với Top Viewed News */}
+          {/* Sidebar */}
           <aside className="home__sidebar">
             <div className="sidebar-widget">
               <div className="sidebar-widget__header">
                 <h3 className="sidebar-widget__title">
-                  <FaChartBar />
-                  Tin Xem Nhiều Nhất
+                  <FaChartBar /> Tin Xem Nhiều Nhất
                 </h3>
               </div>
               <div className="sidebar-widget__content">
                 {topViewedNews.length === 0 ? (
-                  <div className="empty-sidebar">
-                    <p>Chưa có dữ liệu</p>
-                  </div>
+                  <p>Chưa có dữ liệu</p>
                 ) : (
-                  <div className="top-viewed-list">
-                    {topViewedNews.map((newsItem, index) => (
-                      <article key={newsItem.id} className="top-viewed-item">
-                        <div className="top-viewed-item__rank">{index + 1}</div>
-                        <div className="top-viewed-item__content">
-                          <h4 className="top-viewed-item__title">
-                            <Link to={`/news/${newsItem.id}`}>
-                              {truncateText(newsItem.title, 60)}
-                            </Link>
-                          </h4>
-                          <div className="top-viewed-item__meta">
-                            <span className="top-viewed-item__views">
-                              <FaEye />
-                              {newsItem.views || 0} lượt xem
-                            </span>
-                            <span className="top-viewed-item__date">
-                              {formatDate(newsItem.created_at)}
-                            </span>
-                          </div>
+                  topViewedNews.map((newsItem, index) => (
+                    <article key={newsItem.id} className="top-viewed-item">
+                      <div className="top-viewed-item__rank">{index + 1}</div>
+                      <div className="top-viewed-item__content">
+                        <h4 className="top-viewed-item__title">
+                          <Link to={`/news/${newsItem.id}`}>
+                            {truncateText(newsItem.title, 60)}
+                          </Link>
+                        </h4>
+                        <div className="top-viewed-item__meta">
+                          <span className="top-viewed-item__views">
+                            <FaEye /> {newsItem.views || 0} lượt xem
+                          </span>
+                          <span className="top-viewed-item__date">
+                            {formatDate(newsItem.created_at)}
+                          </span>
                         </div>
-                      </article>
-                    ))}
-                  </div>
+                      </div>
+                    </article>
+                  ))
                 )}
               </div>
             </div>
 
-            {/* About Widget */}
+            {/* About */}
             <div className="sidebar-widget">
               <div className="sidebar-widget__header">
                 <h3 className="sidebar-widget__title">
-                  <FaNewspaper />
-                  Về P_NEWS
+                  <FaNewspaper /> Về P_NEWS
                 </h3>
               </div>
               <div className="sidebar-widget__content">
-                <div className="about-widget">
-                  <p>P_NEWS là trang tin tức hàng đầu, cung cấp những thông tin mới nhất và đáng tin cậy nhất.</p>
-                  <div className="about-stats">
-                    <div className="about-stat">
-                      <strong>{news.length}</strong>
-                      <span>Tin tức</span>
-                    </div>
-                    <div className="about-stat">
-                      <strong>{categories.length}</strong>
-                      <span>Danh mục</span>
-                    </div>
+                <p>
+                  P_NEWS là trang tin tức hàng đầu, cung cấp những thông tin mới nhất và đáng tin cậy nhất.
+                </p>
+                <div className="about-stats">
+                  <div className="about-stat">
+                    <strong>{allNews.length}</strong>
+                    <span>Tin tức</span>
+                  </div>
+                  <div className="about-stat">
+                    <strong>{categories.length}</strong>
+                    <span>Danh mục</span>
                   </div>
                 </div>
               </div>

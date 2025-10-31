@@ -21,6 +21,7 @@ import CategoryEdit from './pages/Admin/Category/CategoryEdit'
 import NewsEditAuthor from './pages/Author/News/NewsEditAuthor'
 import NewsCreateAuthor from './pages/Author/News/NewsCreateAuthor'
 import Contact from './pages/Contact/Contact'
+import Profile from './pages/Profile/Profile'
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -59,6 +60,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/category/:id" element={<Home />} />
             <Route path='/contact' element={<Contact />} />
+            <Route path='/profile' element={<Profile/>} />
             {/* Protected Dashboard Routes */}
             <Route 
               path="/admin/dashboard" 

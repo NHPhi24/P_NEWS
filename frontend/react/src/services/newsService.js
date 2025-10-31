@@ -1,4 +1,3 @@
-import { FaAws } from 'react-icons/fa';
 import api from './api';
 import { toastService } from './toastService';
 
@@ -24,9 +23,21 @@ export const newsService = {
       throw err;
     }
   },
-
+  getNewsByPage: async (page = 1, limit = 6, categoryId = null) => {
+    try {
+      let url = `/news?page=${page}&limit=${limit}`;
+      if (categoryId && categoryId !== 'all') {
+        url += `&category_id=${categoryId}`;
+      }
+      const response = await api.get(url);
+      return response.data;
+    } catch (err) {
+      toastService.error('Không thể tải tin tức');
+      throw err;
+    }
+  },
   // Lấy tin tức theo danh mục
-  getNewsByCategory: async (categoryId) => {
+  getNewsByCategory: async (categoryId,) => {
     try {
       const response = await api.get(`/news/category/${categoryId}`);
       return response.data;
@@ -51,13 +62,15 @@ export const newsService = {
   getRelatedNews: async (categoryId, currentNewsId, limit = 3) => {
     try {
       const response = await api.get(`/news/category/${categoryId}`);
-      const relatedNews = response.data.data || response.data;
+      const relatedNews = response.data.data || response.data || [];
+      
       // Filter out current news and limit results
       return relatedNews
         .filter(news => news.id != currentNewsId)
         .slice(0, limit);
     } catch (err) {
       console.error('Error getting related news:', err);
+      toastService.error('Không thể tải tin liên quan');
       return [];
     }
   },

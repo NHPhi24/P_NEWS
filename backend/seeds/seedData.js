@@ -14,6 +14,20 @@ const SAMPLE_USERS = [
   { username: "thuydung_tacgia", password: "author123", email: "thuydung@baiviet.vn", role: "author", avatar_url: "https://i.pravatar.cc/150?img=7" },
 ];
 
+// --- DỮ LIỆU MẪU USER_INFO ---
+const SAMPLE_USER_INFO = [
+  { username: "admin", full_name: "Quản Trị Viên", phone: "0901234567", address: "Hà Nội, Việt Nam" },
+  { username: "vanlong_tacgia", full_name: "Ngô Văn Long", phone: "0912345678", address: "TP.HCM, Việt Nam" },
+  { username: "lananh_tacgia", full_name: "Nguyễn Lan Anh", phone: "0923456789", address: "Đà Nẵng, Việt Nam" },
+  { username: "minhtuan_tacgia", full_name: "Trần Minh Tuấn", phone: "0934567890", address: "Hải Phòng, Việt Nam" },
+  { username: "thuhang_tacgia", full_name: "Lê Thu Hằng", phone: "0945678901", address: "Cần Thơ, Việt Nam" },
+  { username: "quocbao_tacgia", full_name: "Phạm Quốc Bảo", phone: "0956789012", address: "Nha Trang, Việt Nam" },
+  { username: "ngocanh_tacgia", full_name: "Vũ Ngọc Anh", phone: "0967890123", address: "Huế, Việt Nam" },
+  { username: "hoangnam_tacgia", full_name: "Đỗ Hoàng Nam", phone: "0978901234", address: "Vũng Tàu, Việt Nam" },
+  { username: "thuydung_tacgia", full_name: "Phan Thùy Dung", phone: "0989012345", address: "Quảng Ninh, Việt Nam" },
+];
+
+
 const SAMPLE_CATEGORIES = [
   { name: "Công nghệ" },
   { name: "Thể thao" },
@@ -399,6 +413,18 @@ async function seedDatabase() {
         VALUES (${user.username}, ${user.password}, ${user.email}, ${user.role}, ${user.avatar_url})
         ON CONFLICT (email) DO NOTHING;
       `;
+    }
+
+    // USER_INFO
+    for (const userInfo of SAMPLE_USER_INFO) {
+      const user = await sql`SELECT id FROM users WHERE username = ${userInfo.username}`;
+      if (user.length > 0) {
+        await sql`
+          INSERT INTO user_info (user_id, full_name, phone, address)
+          VALUES (${user[0].id}, ${userInfo.full_name}, ${userInfo.phone}, ${userInfo.address})
+          ON CONFLICT (user_id) DO NOTHING;
+        `;
+      }
     }
 
     // CATEGORIES

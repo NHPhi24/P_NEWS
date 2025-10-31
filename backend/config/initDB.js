@@ -3,6 +3,7 @@ import { sql } from "./db.js";
 export async function initDB() {
     try {
 
+
         // Bảng người dùng (user + admin + author)
         await sql`
         CREATE TABLE IF NOT EXISTS users (
@@ -14,6 +15,17 @@ export async function initDB() {
             avatar_url VARCHAR(255), 
             created_at TIMESTAMP NOT NULL DEFAULT now()
         )`;
+        // Bảng thông tin người dùng
+        await sql`
+        CREATE TABLE IF NOT EXISTS user_info (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER UNIQUE REFERENCES users(id),
+            full_name VARCHAR(100),
+            phone VARCHAR(20),
+            address VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        `;
 
         // Bảng danh mục (category)
         await sql`

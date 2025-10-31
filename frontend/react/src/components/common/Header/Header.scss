@@ -110,11 +110,52 @@
 
   &__user-info {
     text-align: right;
+    position: relative;
 
     @include mobile {
       text-align: center;
     }
   }
+
+  &:hover &__user-information {
+    display: block;
+  }
+
+  &__user-information {
+      position: absolute;
+      width: 200px;
+      display: none;
+      background: rgba($gray-color, 0.5);
+      top: 100%; right: 0;
+      font-size: 0.875rem;
+      color: $secondary-color;
+      border-radius: $border-radius;
+      padding: $spacing-md;
+      box-shadow: $shadow-sm;
+
+
+      ul {
+        margin: 0;
+        padding: $spacing-sm;
+        list-style: none;
+        background: white;
+        border-radius: $border-radius;
+
+        li {
+          text-decoration: none;
+          margin: 1rem 0;
+        }
+      }
+      
+      button {
+        border-top: 5px;
+        margin: 0 auto;
+      }
+
+      @include mobile {
+        position: static;
+      }
+    }
 
   &__user-greeting {
     display: block;
