@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { userService } from '../../services/userService';
+import { useToast } from '../../hooks/useToast';
 import Loading from '../../components/ui/Loading/Loading';
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaSave, FaEdit } from 'react-icons/fa';
 import './Profile.scss';
@@ -12,6 +13,7 @@ const Profile = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const { showSuccess, showError } = useToast();
   const [formData, setFormData] = useState({
     full_name: '',
     phone: '',
@@ -27,28 +29,21 @@ const Profile = () => {
       setLoading(true);
       setError(null);
       
-      // Lấy thông tin user cơ bản
+      // Lấy thông tin user từ bảng users đã gộp
       const userResponse = await userService.getUserById(user.id);
       const userData = userResponse.data;
       
-      // Lấy thông tin profile từ user_info
-      let profileData = { ...userData };
-      
-      // Nếu có user_info, merge vào profile
-      if (userData.user_info) {
-        profileData = { ...profileData, ...userData.user_info };
-      }
-      
-      setProfile(profileData);
+      setProfile(userData);
       setFormData({
-        full_name: profileData.full_name || '',
-        phone: profileData.phone || '',
-        address: profileData.address || ''
+        full_name: userData.full_name || '',
+        phone: userData.phone || '',
+        address: userData.address || ''
       });
+      showSuccess('Lấy thông tin người dùng thành công')
       
     } catch (err) {
       console.error('Error loading profile:', err);
-      setError('Không thể tải thông tin profile');
+      showError('Không thể lấy thông tin người dùng');
     } finally {
       setLoading(false);
     }
@@ -67,16 +62,24 @@ const Profile = () => {
       setSaving(true);
       setError(null);
 
-      // Cập nhật thông tin user_info
-      await userService.updateUserInfo(user.id, formData);
+      // Cập nhật thông tin user (bảng users đã gộp)
+      await userService.updateUser(user.id,  {
+        username: profile.username,
+        email: profile.email,
+        role: profile.role,
+        full_name: formData.full_name,
+        phone: formData.phone,
+        address: formData.address
+      });
       
       // Reload profile
       await loadUserProfile();
+      showSuccess('Cập nhật thông tin người dùng thành cong');
       setIsEditing(false);
       
     } catch (err) {
       console.error('Error saving profile:', err);
-      setError('Không thể cập nhật thông tin');
+      showError('Không thể cập nhật thông tin người dùng');
     } finally {
       setSaving(false);
     }

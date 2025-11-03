@@ -385,7 +385,10 @@ const AdminDashboard = () => {
                   columns={[
                     { key: 'id', label: 'ID', width: '80px' },
                     { key: 'username', label: 'Tên đăng nhập' },
+                    { key: 'full_name', label: 'Tên đầy đủ' },
+                    { key: 'phone', label: 'SĐT' },
                     { key: 'email', label: 'Email' },
+                    { key: 'address', label: 'Địa Chỉ' },
                     {
                       key: 'role',
                       label: 'Vai trò',
@@ -396,6 +399,7 @@ const AdminDashboard = () => {
                         </span>
                       )
                     },
+                    
                     {
                       key: 'created_at',
                       label: 'Ngày tạo',

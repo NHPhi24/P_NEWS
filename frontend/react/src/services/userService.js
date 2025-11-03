@@ -20,10 +20,11 @@ export const userService = {
             throw err;
         }
     },
-    updateUserInfo: async(userId, userInfo) => { 
+
+    updateUser: async (userId, data) => { 
         try {
-            const response = await api.put(`/users/${userId}`, userInfo)
-            return response.data
+            const response = await api.put(`/users/${userId}`, data)
+            return response.data;
         } catch (err) {
             toastService.error('Không thể cập nhật người dụng');
             throw err;

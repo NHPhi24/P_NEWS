@@ -3,30 +3,16 @@ import { sql } from "../config/db.js";
 // --- DỮ LIỆU MẪU ---
 
 const SAMPLE_USERS = [
-  { username: "admin", password: "admin123", email: "admin@baiviet.vn", role: "admin", avatar_url: "https://i.pravatar.cc/150?img=9" },
-  { username: "vanlong_tacgia", password: "user123", email: "vanlong@baiviet.vn", role: "user", avatar_url: "https://i.pravatar.cc/150?img=8" },
-  { username: "lananh_tacgia", password: "author123", email: "lananh@baiviet.vn", role: "author", avatar_url: "https://i.pravatar.cc/150?img=1" },
-  { username: "minhtuan_tacgia", password: "author123", email: "minhtuan@baiviet.vn", role: "author", avatar_url: "https://i.pravatar.cc/150?img=2" },
-  { username: "thuhang_tacgia", password: "author123", email: "thuhang@baiviet.vn", role: "author", avatar_url: "https://i.pravatar.cc/150?img=3" },
-  { username: "quocbao_tacgia", password: "author123", email: "quocbao@baiviet.vn", role: "author", avatar_url: "https://i.pravatar.cc/150?img=4" },
-  { username: "ngocanh_tacgia", password: "author123", email: "ngocanh@baiviet.vn", role: "author", avatar_url: "https://i.pravatar.cc/150?img=5" },
-  { username: "hoangnam_tacgia", password: "author123", email: "hoangnam@baiviet.vn", role: "author", avatar_url: "https://i.pravatar.cc/150?img=6" },
-  { username: "thuydung_tacgia", password: "author123", email: "thuydung@baiviet.vn", role: "author", avatar_url: "https://i.pravatar.cc/150?img=7" },
+  { username: "admin", password: "admin123", email: "admin@baiviet.vn", role: "admin", full_name: "Quản Trị Viên", phone: "0901234567", address: "Hà Nội, Việt Nam" },
+  { username: "vanlong_tacgia", password: "user123", email: "vanlong@baiviet.vn", role: "user", full_name: "Ngô Văn Long", phone: "0912345678", address: "TP.HCM, Việt Nam"  },
+  { username: "lananh_tacgia", password: "author123", email: "lananh@baiviet.vn", role: "author", full_name: "Nguyễn Lan Anh", phone: "0923456789", address: "Đà Nẵng, Việt Nam" },
+  { username: "minhtuan_tacgia", password: "author123", email: "minhtuan@baiviet.vn", role: "author", full_name: "Trần Minh Tuấn", phone: "0934567890", address: "Hải Phòng, Việt Nam"},
+  { username: "thuhang_tacgia", password: "author123", email: "thuhang@baiviet.vn", role: "author",   full_name: "Lê Thu Hằng", phone: "0945678901", address: "Cần Thơ, Việt Nam" },
+  { username: "quocbao_tacgia", password: "author123", email: "quocbao@baiviet.vn", role: "author",  full_name: "Phạm Quốc Bảo", phone: "0956789012", address: "Nha Trang, Việt Nam"},
+  { username: "ngocanh_tacgia", password: "author123", email: "ngocanh@baiviet.vn", role: "author", full_name: "Vũ Ngọc Anh", phone: "0967890123", address: "Huế, Việt Nam" },
+  { username: "hoangnam_tacgia", password: "author123", email: "hoangnam@baiviet.vn", role: "author", full_name: "Đỗ Hoàng Nam", phone: "0978901234", address: "Vũng Tàu, Việt Nam" },
+  { username: "thuydung_tacgia", password: "author123", email: "thuydung@baiviet.vn", role: "author",  full_name: "Phan Thùy Dung", phone: "0989012345", address: "Quảng Ninh, Việt Nam"},
 ];
-
-// --- DỮ LIỆU MẪU USER_INFO ---
-const SAMPLE_USER_INFO = [
-  { username: "admin", full_name: "Quản Trị Viên", phone: "0901234567", address: "Hà Nội, Việt Nam" },
-  { username: "vanlong_tacgia", full_name: "Ngô Văn Long", phone: "0912345678", address: "TP.HCM, Việt Nam" },
-  { username: "lananh_tacgia", full_name: "Nguyễn Lan Anh", phone: "0923456789", address: "Đà Nẵng, Việt Nam" },
-  { username: "minhtuan_tacgia", full_name: "Trần Minh Tuấn", phone: "0934567890", address: "Hải Phòng, Việt Nam" },
-  { username: "thuhang_tacgia", full_name: "Lê Thu Hằng", phone: "0945678901", address: "Cần Thơ, Việt Nam" },
-  { username: "quocbao_tacgia", full_name: "Phạm Quốc Bảo", phone: "0956789012", address: "Nha Trang, Việt Nam" },
-  { username: "ngocanh_tacgia", full_name: "Vũ Ngọc Anh", phone: "0967890123", address: "Huế, Việt Nam" },
-  { username: "hoangnam_tacgia", full_name: "Đỗ Hoàng Nam", phone: "0978901234", address: "Vũng Tàu, Việt Nam" },
-  { username: "thuydung_tacgia", full_name: "Phan Thùy Dung", phone: "0989012345", address: "Quảng Ninh, Việt Nam" },
-];
-
 
 const SAMPLE_CATEGORIES = [
   { name: "Công nghệ" },
@@ -409,23 +395,12 @@ async function seedDatabase() {
     // USERS
     for (const user of SAMPLE_USERS) {
       await sql`
-        INSERT INTO users (username, password, email, role, avatar_url)
-        VALUES (${user.username}, ${user.password}, ${user.email}, ${user.role}, ${user.avatar_url})
+        INSERT INTO users (username, password, email, role, full_name, phone, address)
+        VALUES (${user.username}, ${user.password}, ${user.email}, ${user.role}, ${user.full_name}, ${user.phone}, ${user.address})
         ON CONFLICT (email) DO NOTHING;
       `;
     }
 
-    // USER_INFO
-    for (const userInfo of SAMPLE_USER_INFO) {
-      const user = await sql`SELECT id FROM users WHERE username = ${userInfo.username}`;
-      if (user.length > 0) {
-        await sql`
-          INSERT INTO user_info (user_id, full_name, phone, address)
-          VALUES (${user[0].id}, ${userInfo.full_name}, ${userInfo.phone}, ${userInfo.address})
-          ON CONFLICT (user_id) DO NOTHING;
-        `;
-      }
-    }
 
     // CATEGORIES
     for (const category of SAMPLE_CATEGORIES) {
