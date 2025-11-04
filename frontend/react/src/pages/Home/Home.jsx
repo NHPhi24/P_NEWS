@@ -129,7 +129,7 @@ const Home = () => {
   // Xử lý tìm kiếm
   const handleSearch = (term) => {
     setSearchTerm(term);
-    const searching = !!term.trim();
+    const searching = !!term.trim(); // !!: chuyển sang kiểu boolean, loại bỏ khoản trắng
     setIsSearching(searching);
   };
 
