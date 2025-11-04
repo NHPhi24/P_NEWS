@@ -13,7 +13,7 @@ export async function initDB() {
             email VARCHAR(255) UNIQUE NOT NULL,
             role VARCHAR(10) CHECK (role IN ('user','admin','author')) DEFAULT 'user',
             full_name VARCHAR(100),
-            phone VARCHAR(20),
+            phone VARCHAR(10),
             address VARCHAR(255),
             created_at TIMESTAMP NOT NULL DEFAULT now()
         )`;
