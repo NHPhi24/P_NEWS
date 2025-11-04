@@ -8,6 +8,7 @@
   &__content {
     @include flex-between;
     padding: $spacing-md 0;
+    position: relative;
   }
 
   &__logo {
@@ -25,7 +26,7 @@
     flex: 1;
 
     @include mobile {
-      position: fixed;
+      position: absolute;
       top: 100%;
       left: 0;
       right: 0;
@@ -33,11 +34,14 @@
       flex-direction: column;
       padding: $spacing-xl;
       box-shadow: $shadow-lg;
-      transform: translateY(-100%);
+      transform: translateY(-20px);
       opacity: 0;
       visibility: hidden;
       transition: $transition-base;
       gap: $spacing-lg;
+      height: auto;
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
 
       &--open {
         transform: translateY(0);
@@ -114,48 +118,9 @@
 
     @include mobile {
       text-align: center;
+      width: 100%;
     }
   }
-
-  &:hover &__user-information {
-    display: block;
-  }
-
-  &__user-information {
-      position: absolute;
-      width: 200px;
-      display: none;
-      background: rgba($gray-color, 0.5);
-      top: 100%; right: 0;
-      font-size: 0.875rem;
-      color: $secondary-color;
-      border-radius: $border-radius;
-      padding: $spacing-md;
-      box-shadow: $shadow-sm;
-
-
-      ul {
-        margin: 0;
-        padding: $spacing-sm;
-        list-style: none;
-        background: white;
-        border-radius: $border-radius;
-
-        li {
-          text-decoration: none;
-          margin: 1rem 0;
-        }
-      }
-      
-      button {
-        border-top: 5px;
-        margin: 0 auto;
-      }
-
-      @include mobile {
-        position: static;
-      }
-    }
 
   &__user-greeting {
     display: block;
@@ -170,6 +135,61 @@
     color: $secondary-color;
   }
 
+  // Desktop hover effect
+  @include desktop {
+    &__user-info:hover &__user-information {
+      display: block;
+    }
+  }
+
+  &__user-information {
+    position: absolute;
+    width: 200px;
+    display: none;
+    background: rgba($gray-color, 0.5);
+    top: 100%;
+    right: 0;
+    font-size: 0.875rem;
+    color: $secondary-color;
+    border-radius: $border-radius;
+    padding: $spacing-md;
+    box-shadow: $shadow-sm;
+    z-index: 1001;
+
+    ul {
+      margin: 0;
+      padding: $spacing-sm;
+      list-style: none;
+      background: white;
+      border-radius: $border-radius;
+
+      li {
+        margin: 1rem 0;
+        
+        a, button {
+          width: 100%;
+          justify-content: flex-start;
+        }
+      }
+    }
+
+    @include mobile {
+      position: static;
+      width: 100%;
+      display: block;
+      background: transparent;
+      box-shadow: none;
+      padding: 0;
+      margin-top: $spacing-md;
+
+      ul {
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+      }
+    }
+  }
+
   &__logout-btn {
     @include flex-center;
     gap: $spacing-xs;
@@ -181,15 +201,23 @@
     font-size: 0.875rem;
     cursor: pointer;
     transition: $transition-base;
+    width: 100%;
+    text-align: left;
 
     &:hover {
-      background: color-mix(in srgb, $danger-color, black 10%)
+      background: color-mix(in srgb, $danger-color, black 10%);
     }
   }
 
   &__auth-links {
     @include flex-center;
     gap: $spacing-md;
+
+    @include mobile {
+      flex-direction: column;
+      width: 100%;
+      gap: $spacing-lg;
+    }
   }
 
   &__menu-toggle {
@@ -200,6 +228,7 @@
     font-size: 1.25rem;
     cursor: pointer;
     padding: $spacing-xs;
+    z-index: 1001;
 
     @include mobile {
       display: block;
