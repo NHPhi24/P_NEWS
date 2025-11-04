@@ -7,7 +7,7 @@ export const authorService = {
             const response = await api.get(`/authors`)
             return response.data
         } catch (err) {
-            toastService.error('Không thể tải danh sách tac giản')
+            toastService.error('Không thể tải danh sách tác giả')
             throw err;
         }
     },
@@ -17,7 +17,7 @@ export const authorService = {
             const response = await api.get(`/authors/${id}`)
             return response.data
         } catch (err) {
-            toastService.error('Không thể tải chi tiết tac giản')
+            toastService.error('Không thể tải chi tiết tác giả')
             throw err;
         }
     }

@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('user', JSON.stringify(response.user));
         // show success toast on role
         const roleMessage = {
-          'admin' : 'Chào mứng Admin trở lại',
+          'admin' : 'Chào mừng Admin trở lại',
           'author' : 'Chào mừng tác giả trở lại',
           'user' : 'Đăng nhập thành công!'
         }

@@ -107,7 +107,7 @@ const Register = () => {
 
         if(result.success) {
             toast.success(result.message|| 'Đăng ký thành công! Vui lòng đăng nhập', {
-                position: "top-center",
+                position: "top-right",
             });
             setSuccessMessage(result.message|| 'Đăng ký thành công! Vui lòng đăng nhập');
             setFormData({
@@ -124,7 +124,7 @@ const Register = () => {
             setIsSubmitting(false); 
         } else {
             toast.error(result.message || 'Đăng ký thất bại. Vui lý thử lại', {
-                position: "top-center"
+                position: "top-right"
             });
         }
     };
@@ -170,7 +170,7 @@ const Register = () => {
 
                         <div className="input-group">
                             <Input
-                                lable="Mật khẩu"
+                                label="Mật khẩu"
                                 type={showPassword ? 'text': 'password'}
                                 name="password"
                                 value={formData.password}
@@ -191,7 +191,7 @@ const Register = () => {
 
                         <div className="input-group">
                             <Input
-                                lable="Xác nhận mật khâu"
+                                label="Xác nhận mật khâu"
                                 type={showConfirmPassword ? 'text': 'password'}
                                 name="confirmPassword"
                                 value={formData.confirmPassword}

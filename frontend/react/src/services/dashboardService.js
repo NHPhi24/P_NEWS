@@ -87,7 +87,7 @@ export const dashboardService = {
   updateUser: async (id, userData) => {
     try {
       const response = await api.put(`/dashboard/admin/users/${id}`, userData);
-      toastService.success('Cập nhật người dụng thành công!');
+      toastService.success('Cập nhật người dùng thành công!');
       return response.data;
     } catch (err) {
       console.log("Error updateUser function in dashboard", err)
@@ -99,10 +99,10 @@ export const dashboardService = {
   deleteUser: async (id) => {
     try {
       const response = await api.delete(`/dashboard/admin/users/${id}`);
-      toastService.success('Xóa người dụng thành cong!');
+      toastService.success('Xóa người dùng thành công!');
       return response.data; 
     } catch (err) {
-      toastService.error('Không thể xóa người dụng');
+      toastService.error('Không thể xóa người dùng');
       console.log("Error deleteUser function in dashboard",err)
       throw err;
     }
@@ -174,6 +174,7 @@ export const dashboardService = {
   deleteCategory: async (id) => {
     try {
       const response = await api.delete(`/dashboard/admin/categories/${id}`);
+      toastService.success('Xóa danh mục thông công!');
       return response.data;
       
     } catch (err) {
