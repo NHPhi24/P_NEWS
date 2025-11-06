@@ -123,7 +123,7 @@ const Register = () => {
             }, 2000);
             setIsSubmitting(false); 
         } else {
-            toast.error(result.message || 'Đăng ký thất bại. Vui lý thử lại', {
+            toast.error(result.message || 'Đăng ký thất bại. Vui lòng thử lại', {
                 position: "top-right"
             });
         }
