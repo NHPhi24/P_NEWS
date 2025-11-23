@@ -17,7 +17,9 @@ const UserEdit = () => {
         username: '',
         email: '',
         password: '',
-        avatar_url: ''
+        full_name: '',
+        phone: '',
+        address: ''
     });
 
     useEffect(() => { 
@@ -30,9 +32,11 @@ const UserEdit = () => {
             const user = userRes.data || userRes;
             setFormData({
                 username: user.username || '',
+                full_name: user.full_name || '',
+                phone: user.phone || '',
                 email: user.email || '',
-                password: user.password || '',
-                avatar_url: user.avatar_url || ''
+                address: user.address || '',
+                password: user.password || ''
             })
         } catch (err) {
             showError("Không thể tải dữ liệu người dùng")
@@ -91,6 +95,26 @@ const UserEdit = () => {
                 </div>
 
                 <div className="form-group">
+                    <label>Tên đầy đủ</label>
+                    <input 
+                        type="text" 
+                        name="full_name" 
+                        value={formData.full_name}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>SDT</label>
+                    <input 
+                        type="text" 
+                        name="phone" 
+                        value={formData.phone}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <div className="form-group">
                     <label>Email</label>
                     <input 
                         type="email" 
@@ -98,6 +122,16 @@ const UserEdit = () => {
                         value={formData.email}
                         onChange={handleChange}
                         required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>Địa chỉ</label>
+                    <input 
+                        type="text" 
+                        name="address" 
+                        value={formData.address}
+                        onChange={handleChange}
                     />
                 </div>
 
@@ -111,16 +145,6 @@ const UserEdit = () => {
                     </select>
                 </div>
 
-                <div className="form-group">
-                    <label>Hình ảnh URL</label>
-                    <input 
-                        type="text" 
-                        name="avatar_url" 
-                        value={formData.avatar_url}
-                        onChange={handleChange}
-                        placeholder="http://..."
-                    />
-                </div>
 
                 <div className="form-actions">
                     <button type="submit" className="btn btn-primary" disabled={saving}>
