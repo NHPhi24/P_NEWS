@@ -37,7 +37,7 @@ export const dashboardService = {
     return response.data;
   },
 
-  getAuthorNews: async (page = 1, limit = 10) => {
+  getAuthorNews: async (page = 1, limit = 100) => {
     const response = await api.get(`/dashboard/author/news?page=${page}&limit=${limit}`);
     return response.data;
   },

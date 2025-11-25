@@ -38,12 +38,12 @@ app.use(
 app.use(
     session({
         secret: process.env.SECRET_KEY,
-        resave: false,
-        saveUninitialized: false,
+        resave: false, //không lưu phiên khi có sự thay đổi
+        saveUninitialized: false, //Không lưu phiên khi chưa dữ liệu
         httpOnly: true,
         cookie: { 
             httpOnly: true, // bảo mật: cookie không bị JS đọc
-            maxAge: 1000 * 60 * 60 * 24, // 1 tiếng    
+            maxAge: 1000 * 60 * 60 * 24, // 1 ngày
         }, // 1 day
     })
 )

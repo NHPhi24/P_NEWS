@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../hooks/useToast';
+import { newsService } from '../../../services/newsService';
 import { dashboardService } from '../../../services/dashboardService';
 import Loading from '../../../components/ui/Loading/Loading';
 import DataTable from '../../../components/ui/DataTable/DataTable';
@@ -38,7 +39,7 @@ const AuthorDashboard = () => {
 
   // phân trang
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(9);
 
   useEffect(() => {
     loadDashboardData();
@@ -46,6 +47,7 @@ const AuthorDashboard = () => {
 
   useEffect(() => {
     if (activeTab === 'news') {
+      setCurrentPage(1);
       loadAuthorNews();
     }
   }, [activeTab]);
@@ -76,6 +78,7 @@ const AuthorDashboard = () => {
   const loadAuthorNews = async () => {
     try {
       setTableLoading(true);
+      setCurrentPage(1);
       const newsRes = await dashboardService.getAuthorNews();
       if (newsRes.success) {
         setNews(newsRes.data);
@@ -93,6 +96,7 @@ const AuthorDashboard = () => {
   const handleRefresh = async () => {
     try {
       setRefreshing(true);
+      setCurrentPage(1);
       await Promise.all([loadDashboardData(), loadAuthorNews()]);
       showSuccess('Đã cập nhật dữ liệu mới nhất');
     } catch (err) {
@@ -106,7 +110,7 @@ const AuthorDashboard = () => {
     if (!window.confirm('Bạn có chắc chắn muốn xóa tin này? Hành động này không thể hoàn tác.')) return;
 
     try {
-      const result = await dashboardService.deleteNews(id);
+      const result = await newsService.deleteNews(id);
       if (result.success) {
         setNews(news.filter(item => item.id !== id));
         // Update stats after deletion
@@ -152,7 +156,7 @@ const AuthorDashboard = () => {
 
   // lấy dữ liệu cho trang hiện tại
   const getCurrentData = () => {
-    const startIndex = (currentPage -1 ) *itemsPerPage
+    const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return news.slice(startIndex, endIndex);
   }
@@ -162,7 +166,7 @@ const AuthorDashboard = () => {
     return Math.ceil(news.length / itemsPerPage);
   }
 
-  if(loading) return <Loading text="Đang tải dashboard..." />
+
   const currentData = getCurrentData();
   const totalPages = getTotalPages();
 
@@ -267,7 +271,7 @@ const AuthorDashboard = () => {
               <div className="news-section">
                 <DataTable
                   title={`Danh sách Tin tức của bạn (${news.length} tin)`}
-                  data={news}
+                  data={currentData}
                   columns={[
                     { key: 'id', label: 'ID', width: '80px' },
                     { 
